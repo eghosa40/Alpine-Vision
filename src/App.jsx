@@ -15,7 +15,7 @@ export default function App() {
                 {/* Main content area that grows to fill available space */}
                 <main className="flex-grow">
                     <Routes>
-                        <Route path="/" element={<HomePage />} />
+                        <Route path="*" element={<HomePage />} />
                     </Routes>
                 </main>
 

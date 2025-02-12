@@ -1,8 +1,17 @@
+// src/pages/HomePage.jsx
+import React from "react";
+import Hero from "src/components/Hero";
+import ProductShowcase from "src/components/ProductShowcase";
+
 export default function HomePage() {
     return (
-        <main className="p-6">
-            <h1 className="text-2xl font-bold">Welcome to My Store</h1>
-            <p>Start building your homepage here...</p>
-        </main>
+        <div>
+            {/* Remove or comment out the debug message */}
+            {/* <p className="text-2xl text-blue-500 text-center mt-8">Hello, HomePage is rendered!</p> */}
+            <Hero />
+            <ProductShowcase />
+            {/* Other sections can go here */}
+        </div>
     );
 }
+
