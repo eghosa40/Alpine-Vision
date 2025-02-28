@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "src/components/Navbar";
 import Footer from "src/components/Footer";
-import HomePage from "src/pages/HomePage";
+import Home from "src/pages/Home";
+import Shop from "src/pages/Shop";
 
 export default function App() {
     return (
@@ -15,7 +16,8 @@ export default function App() {
                 {/* Main content area that grows to fill available space */}
                 <main className="flex-grow">
                     <Routes>
-                        <Route path="*" element={<HomePage />} />
+                        <Route path="/" element={<Home />} />
+                        <Route path="/shop" element={<Shop />} />
                     </Routes>
                 </main>
 

@@ -15,7 +15,7 @@ export default function Navbar() {
 
     // Define your nav links for easy mapping.
     const navLinks = [
-        { to: "/", label: "Shop" },
+        { to: "/shop", label: "Shop" },
         { to: "/story", label: "Our Story" },
         { to: "/blog", label: "Blog" },
     ];
