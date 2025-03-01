@@ -1,82 +1,46 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import placeholderImage from "src/assets/showcase3.webp"; // Ensure this path is correct
 
-// Sample product data
 const products = [
-    {
-        id: "1",
-        name: "Lounge Tunic/ Black",
-        price: 50.0,
-        image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-02-28%20at%2013.15.09-3VxLdy85AiTbi0yl07Z9IVudv8ZfEg.png",
-        category: "Tops",
-        isNew: false,
-    },
-    {
-        id: "2",
-        name: "Lounge Tunic/ Blue",
-        price: 50.0,
-        image: "/placeholder.svg?height=400&width=300",
-        category: "Tops",
-        isNew: false,
-    },
+    { id: "1", name: "Alpine Pro", price: 120.0, image: placeholderImage, category: "Performance" },
+    { id: "2", name: "Summit Explorer", price: 90.0, image: placeholderImage, category: "Performance" },
     {
         id: "3",
-        name: "Lounge Tunic/ Cream",
-        price: 50.0,
-        originalPrice: 40.0,
-        image: "/placeholder.svg?height=400&width=300",
-        category: "Tops",
+        name: "Snow Drift",
+        price: 80.0,
+        originalPrice: 100.0,
+        image: placeholderImage,
+        category: "Casual",
         onSale: true,
     },
-    {
-        id: "4",
-        name: "Sonia Skirt",
-        price: 50.0,
-        image: "/placeholder.svg?height=400&width=300",
-        category: "Bottoms",
-        isNew: true,
-    },
-    {
-        id: "5",
-        name: "Sonia Dress",
-        price: 50.0,
-        image: "/placeholder.svg?height=400&width=300",
-        category: "Dresses",
-        isNew: false,
-    },
-    {
-        id: "6",
-        name: "Wide Pant",
-        price: 50.0,
-        image: "/placeholder.svg?height=400&width=300",
-        category: "Bottoms",
-        isNew: false,
-    },
-    {
-        id: "7",
-        name: "Haori Jacket",
-        price: 50.0,
-        image: "/placeholder.svg?height=400&width=300",
-        category: "Tops",
-        isNew: true,
-    },
-    {
-        id: "8",
-        name: "Wide Pant / Blue",
-        price: 50.0,
-        image: "/placeholder.svg?height=400&width=300",
-        category: "Bottoms",
-        isNew: false,
-    },
+    { id: "4", name: "Mountain Glide", price: 70.0, image: placeholderImage, category: "Casual" },
+    { id: "5", name: "Storm Vision", price: 150.0, image: placeholderImage, category: "Performance" },
+    { id: "6", name: "Powder View", price: 110.0, image: placeholderImage, category: "Casual" },
 ];
+
+const categories = ["All", "Performance", "Casual", "Sale"];
+const sortOptions = {
+    relevant: "Most Relevant",
+    "price-low": "Price: Low to High",
+    "price-high": "Price: High to Low",
+    newest: "Newest Arrivals",
+};
 
 export default function ProductListing() {
     const [sortBy, setSortBy] = useState("relevant");
+    const [selectedCategory, setSelectedCategory] = useState("All");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    // Sort products based on selected option
-    const sortedProducts = [...products].sort((a, b) => {
+    const filteredProducts =
+        selectedCategory === "All"
+            ? products
+            : selectedCategory === "Sale"
+                ? products.filter((product) => product.onSale)
+                : products.filter((product) => product.category === selectedCategory);
+
+    const sortedProducts = [...filteredProducts].sort((a, b) => {
         switch (sortBy) {
             case "price-low":
                 return a.price - b.price;
@@ -85,53 +49,54 @@ export default function ProductListing() {
             case "newest":
                 return a.isNew ? -1 : b.isNew ? 1 : 0;
             default:
-                return 0; // "relevant" - keep original order
+                return 0;
         }
     });
 
-    // Get display text for current sort option
-    const getSortText = (option) => {
-        switch (option) {
-            case "relevant":
-                return "Most Relevant";
-            case "price-low":
-                return "Price: Low to High";
-            case "price-high":
-                return "Price: High to Low";
-            case "newest":
-                return "Newest Arrivals";
-            default:
-                return "Sort";
-        }
-    };
-
     return (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Sort dropdown */}
-            <div className="flex justify-end mb-8">
-                <div className="relative">
-                    <div
-                        className="flex items-center border border-gray-200 px-4 py-2 w-48 cursor-pointer"
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            {/* Category Filter */}
+            <div className="flex justify-center space-x-4 md:space-x-8 mb-8">
+                {categories.map((category) => (
+                    <button
+                        key={category}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                            selectedCategory === category
+                                ? "bg-black text-white"
+                                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                        }`}
+                        onClick={() => setSelectedCategory(category)}
                     >
-                        <span className="text-sm flex-1">Sort by: {getSortText(sortBy)}</span>
-                        <ChevronDown className="h-4 w-4 ml-2" />
-                    </div>
+                        {category}
+                    </button>
+                ))}
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="flex justify-end mb-8 relative">
+                <div className="relative inline-block text-left">
+                    <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="flex items-center border border-gray-300 px-4 py-2 w-48 rounded-md cursor-pointer bg-white text-black shadow-md"
+                    >
+                        <span className="text-sm flex-1">{`Sort by: ${sortOptions[sortBy]}`}</span>
+                        <ChevronDown className="h-4 w-4 ml-2 text-black" />
+                    </button>
 
                     {isDropdownOpen && (
-                        <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 shadow-md z-10">
-                            <div className="py-1">
-                                {["relevant", "price-low", "price-high", "newest"].map((option) => (
-                                    <div
+                        <div className="absolute right-0 mt-1 w-48 border border-gray-200 shadow-md z-10 rounded-md overflow-hidden bg-white">
+                            <div className="py-1 bg-white">  {/* Force White Background */}
+                                {Object.keys(sortOptions).map((option) => (
+                                    <button
                                         key={option}
-                                        className="px-4 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                                        className="w-full text-left px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 text-black bg-white"
                                         onClick={() => {
                                             setSortBy(option);
                                             setIsDropdownOpen(false);
                                         }}
                                     >
-                                        {getSortText(option)}
-                                    </div>
+                                        {sortOptions[option]}
+                                    </button>
                                 ))}
                             </div>
                         </div>
@@ -139,35 +104,34 @@ export default function ProductListing() {
                 </div>
             </div>
 
-            {/* Product grid */}
+
+            {/* Product Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                 {sortedProducts.map((product) => (
-                    <Link to={`/products/${product.id}`} key={product.id} className="group">
-                        <div className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 transform hover:translate-y-[-2px]">
+                    <Link to={`/products/${product.id}`} key={product.id} className="group no-underline">
+                        <div className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-0.5 rounded-lg overflow-hidden">
                             <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
                                 <img
-                                    src={product.image || "/placeholder.svg"}
+                                    src={product.image || placeholderImage}
                                     alt={product.name}
                                     className="object-cover object-center w-full h-full"
                                 />
                                 {product.onSale && (
-                                    <div className="absolute top-0 right-0 bg-black text-white text-xs px-2 py-1">
+                                    <div className="absolute top-0 right-0 bg-black text-white text-xs px-2 py-1 rounded-bl-md">
                                         SALE
                                     </div>
                                 )}
                             </div>
                             <div className="p-4">
-                                <h3 className="font-medium text-base text-gray-900">{product.name}</h3>
-                                <div className="mt-1 flex items-center">
+                                <h3 className="font-semibold text-base text-gray-900">{product.name}</h3>
+                                <div className="mt-1 flex items-center space-x-2">
                                     {product.originalPrice ? (
                                         <>
-                                            <span className="text-gray-500 line-through mr-2">
-                                                ${product.originalPrice.toFixed(2)}
-                                            </span>
-                                            <span className="text-gray-900">${product.price.toFixed(2)}</span>
+                                            <span className="text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                                            <span className="text-gray-900 font-semibold">${product.price.toFixed(2)}</span>
                                         </>
                                     ) : (
-                                        <span className="text-gray-900">${product.price.toFixed(2)}</span>
+                                        <span className="text-gray-900 font-semibold">${product.price.toFixed(2)}</span>
                                     )}
                                 </div>
                             </div>
@@ -178,4 +142,5 @@ export default function ProductListing() {
         </section>
     );
 }
+
 

@@ -1,13 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: "class", // Corrected dark mode format
   content: [
-    "./pages/**/*.{js,jsx,ts,tsx,mdx}",
-    "./components/**/*.{js,jsx,ts,tsx,mdx}",
-    "./app/**/*.{js,jsx,ts,tsx,mdx}",
-    "*.{js,ts,jsx,tsx,mdx}",
-    "src/index.html", // Keep old HTML reference
-    "src/**/*.{js,jsx,ts,tsx}",
+    "./index.html", // Main HTML file
+    "./src/**/*.{js,ts,jsx,tsx}", // Include all source files
+    "./pages/**/*.{js,jsx,ts,tsx,mdx}", // Next.js-style pages (optional)
+    "./components/**/*.{js,jsx,ts,tsx,mdx}", // Components folder
+    "./app/**/*.{js,jsx,ts,tsx,mdx}", // App directory (if used)
+    "*.{js,ts,jsx,tsx,mdx}", // Global matching for loose files
   ],
   theme: {
     extend: {
@@ -45,6 +45,10 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        coral: { // Restored missing coral colors
+          500: "#e88f7d",
+          600: "#e27d69",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -64,5 +68,6 @@ module.exports = {
   },
   plugins: [require("tailwindcss-animate")],
 };
+
 
 

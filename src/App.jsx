@@ -3,6 +3,7 @@ import Navbar from "src/components/Navbar";
 import Footer from "src/components/Footer";
 import Home from "src/pages/Home";
 import Shop from "src/pages/Shop";
+import ProductDetail from "src/pages/ProductDetail";
 
 export default function App() {
     return (
@@ -18,6 +19,7 @@ export default function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/shop" element={<Shop />} />
+                        <Route path="/products/:id" element={<ProductDetail />} />
                     </Routes>
                 </main>
 
