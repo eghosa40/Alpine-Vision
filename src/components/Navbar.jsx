@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag, Menu, X } from "lucide-react";
+import CartDropdown from "src/components/CartDropdown";
 import { Button } from "src/components/ui/button";
 import {
     NavigationMenu,
@@ -8,12 +9,13 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
 } from "src/components/ui/navigation-menu";
+import { useCart } from "src/context/CartContext";
 
 export default function Navbar() {
-    const [cartCount, setCartCount] = React.useState(0);
-    const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+    const [showCart, setShowCart] = React.useState(false);
+    const { cart } = useCart(); // Get cart state
 
-    // Define your nav links for easy mapping.
+    // ✅ Fix #1: Re-define `navLinks` (previously commented out)
     const navLinks = [
         { to: "/shop", label: "Shop" },
         { to: "/story", label: "Our Story" },
@@ -44,17 +46,6 @@ export default function Navbar() {
                         </NavigationMenuList>
                     </NavigationMenu>
 
-                    {/* Mobile Menu Toggle Button */}
-                    <div className="md:hidden">
-                        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                            {mobileMenuOpen ? (
-                                <X className="h-6 w-6 text-gray-800" />
-                            ) : (
-                                <Menu className="h-6 w-6 text-gray-800" />
-                            )}
-                        </button>
-                    </div>
-
                     {/* Centered Logo */}
                     <div className="flex-1 flex justify-center">
                         <Link to="/" className="text-2xl font-semibold text-gray-900 hover:text-gray-900">
@@ -63,49 +54,30 @@ export default function Navbar() {
                     </div>
 
                     {/* Right Side Actions */}
-                    <div className="flex items-center gap-6">
-                        <Link to="outline" className="text-sm font-medium text-gray-800  hover:text-black">
+                    <div
+                        className="flex items-center gap-6"
+                        onMouseEnter={() => setShowCart(true)} onMouseLeave={() => setShowCart(false)}
+                    >
+                        <Link to="/outline" className="text-sm font-medium text-gray-800 hover:text-black">
                             Login
                         </Link>
-                        <Button variant="ghost" size="icon" className="relative bg-transparent hover:bg-gray-200">
-                            <ShoppingBag className="h-6 w-6 text-gray-900" />
-                            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[11px] text-white">
-                {cartCount}
-              </span>
-                        </Button>
+                        <Link to={"/cart"} className={"relative"}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="relative bg-transparent hover:bg-gray-200"
+                            >
+                                <ShoppingBag className="h-6 w-6 text-gray-900" />
+                                {/* ✅ Fix #2: Replace cartCount with cart.length */}
+                                <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[11px] text-white">
+                                {cart.reduce((total, item) => total + item.quantity, 0)}
+                            </span>
+                            </Button>
+                            {showCart && <CartDropdown />}
+                        </Link>
                     </div>
                 </div>
             </nav>
-
-            {/* Mobile Navigation Panel */}
-            {mobileMenuOpen && (
-                <div className="md:hidden bg-white shadow-md">
-                    <div className="px-8 py-4 space-y-2">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.to}
-                                to={link.to}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="block relative py-2 text-sm font-medium text-gray-800 hover:text-black group"
-                            >
-                                {link.label}
-                                {/* Laser underline for mobile */}
-                                <span
-                                    style={{ top: "calc(100% + 4px)" }}
-                                    className="absolute left-0 bottom-0 block h-0.5 w-0 bg-black transition-all duration-300 group-hover:w-full"
-                                />
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
         </header>
     );
 }
-
-
-
-
-
-
-

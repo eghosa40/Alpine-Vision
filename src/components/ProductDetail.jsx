@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useCart } from "../context/CartContext";
 
 export default function ProductDetail({ product }) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
+    const { addToCart } = useCart();
 
     const handleQuantityChange = (e) => {
         const value = Number.parseInt(e.target.value);
@@ -12,14 +14,15 @@ export default function ProductDetail({ product }) {
     };
 
     const handleAddToCart = () => {
-        console.log("Adding to cart:", {
-            productId: product.id,
-            quantity: quantity,
-        });
+        // Call addToCart as many times as specified by quantity
+        for (let i = 0; i < quantity; i++) {
+            addToCart(product);
+        }
+        console.log("Cart after adding (ProductDetail):", product);
     };
 
     return (
-        <div className="bg-white min-h-screen">
+        <div className="bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Image Gallery */}
@@ -90,3 +93,5 @@ export default function ProductDetail({ product }) {
         </div>
     );
 }
+
+

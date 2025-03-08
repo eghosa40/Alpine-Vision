@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useCart } from "src/context/CartContext";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -44,6 +45,19 @@ const products = [
         imageUrl: showcase2,
     },
 ];
+const FeaturedCarousel = () => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const { addToCart } = useCart(); // ✅ Now addToCart is accessible
+
+    const displayedProducts = products.slice(currentIndex, currentIndex + 3);
+
+    const nextSlide = () => {
+        setCurrentIndex((prev) => (prev + 1) % products.length);
+    };
+
+    const prevSlide = () => {
+        setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
+    };
 
 // Helper function to get exactly 3 products, wrapping around if needed
 const getDisplayedProducts = (currentIndex) => {
@@ -85,7 +99,11 @@ const ProductCard = ({ product }) => {
                         View Details
                     </Button>
                     <Button
-                        onClick={() => console.log("Add to cart:", product.id)}
+                        // onClick={() => console.log("Add to cart:", product.id)}
+                        onClick={() => {
+                            addToCart(product);
+                            console.log("Cart after adding (FeaturedCarousel):", product);
+                        }}
                         className="w-full !bg-black !text-white !border-black !shadow-lg rounded-md py-3 transition-all duration-300"
                     >
                         Add to Cart
@@ -95,19 +113,6 @@ const ProductCard = ({ product }) => {
         </div>
     );
 };
-
-
-const FeaturedCarousel = () => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const displayedProducts = getDisplayedProducts(currentIndex);
-
-    const nextSlide = () => {
-        setCurrentIndex((prev) => (prev + 1) % products.length);
-    };
-
-    const prevSlide = () => {
-        setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
-    };
 
     return (
         <section className="w-full py-16 bg-white">

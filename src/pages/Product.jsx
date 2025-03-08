@@ -1,4 +1,4 @@
-import ProductDetail from "../components/ProductDetails";
+import ProductDetail from "../components/ProductDetail";
 import FeaturedCarousel from "src/components/FeaturedCarousel";
 
 const productData = {
@@ -16,9 +16,11 @@ const productData = {
 
 export default function ProductPage() {
     return (
-        <div className="pt-16"> {/* Adds spacing below the navbar */}
+        <div className="pt-32 bg-white">
             <ProductDetail product={productData} />
-            <FeaturedCarousel />
+            <div className={"mt-12"}>
+                <FeaturedCarousel />
+            </div>
         </div>
     );
 }
