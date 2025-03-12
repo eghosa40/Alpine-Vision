@@ -63,10 +63,8 @@ export default function Cart() {
                                             {/* Decrease Button */}
                                             <button
                                                 onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    updateQuantity(item.id, (prevQuantity) =>
-                                                        Math.max(1, Number(prevQuantity) - 1)
-                                                    )
+                                                    e.stopPropagation();
+                                                    updateQuantity(item.id, -1); // subtract 1
                                                 }}
                                                 className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-[6px] transition duration-200"
                                                 title="Decrease quantity"
@@ -80,16 +78,15 @@ export default function Cart() {
                                             </button>
                                             {/* Quantity Display */}
                                             <span className="w-[40px] h-[40px] flex items-center justify-center bg-white text-black text-center font-semibold">
-                        {item.quantity}
-                      </span>
+                                                {item.quantity}
+                                            </span>
                                             {/* Increase Button */}
                                             <button
                                                 onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    updateQuantity(item.id, (prevQuantity) =>
-                                                        Number(prevQuantity) + 1
-                                                    )
+                                                    e.stopPropagation();
+                                                    updateQuantity(item.id, 1); // add 1
                                                 }}
+
                                                 className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-[6px] transition duration-200"
                                                 title="Increase quantity"
                                                 style={{
