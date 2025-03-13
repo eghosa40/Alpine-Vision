@@ -50,7 +50,6 @@
 "use client"
 import { createContext, useContext, useState, useEffect } from "react"
 
-// Create the auth context
 const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
@@ -58,23 +57,32 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(null)
     const [loading, setLoading] = useState(true)
 
-    // Check if user is already logged in (on page load/refresh)
     useEffect(() => {
-        const storedToken = localStorage.getItem("token")
-        const storedUser = localStorage.getItem("user")
+        try {
+            const storedToken = localStorage.getItem("token")
+            const storedUser = localStorage.getItem("user")
 
-        if (storedToken && storedUser) {
-            setToken(storedToken)
-            setCurrentUser(JSON.parse(storedUser))
+            if (storedToken && storedUser) {
+                setToken(storedToken)
+                setCurrentUser(JSON.parse(storedUser))
+            }
+        } catch (error) {
+            console.error("Error parsing user data:", error)
+            localStorage.removeItem("token")
+            localStorage.removeItem("user")
+        } finally {
+            setLoading(false)
         }
-
-        setLoading(false)
     }, [])
 
     // Login function
     const login = (newToken, user) => {
         setToken(newToken)
         setCurrentUser(user)
+        localStorage.setItem("token", newToken)
+        localStorage.setItem("user", JSON.stringify(user))
+
+        console.log("User logged in:", user);
     }
 
     // Logout function
@@ -86,14 +94,10 @@ export function AuthProvider({ children }) {
     }
 
     // Check if user is authenticated
-    const isAuthenticated = () => {
-        return !!token
-    }
+    const isAuthenticated = () => !!token
 
     // Check if user is admin
-    const isAdmin = () => {
-        return currentUser?.role === "admin"
-    }
+    const isAdmin = () => currentUser?.role === "admin"
 
     const value = {
         currentUser,
@@ -116,6 +120,3 @@ export function useAuth() {
     }
     return context
 }
-
-
-

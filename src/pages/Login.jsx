@@ -23,7 +23,6 @@ export default function Login() {
         setIsLoading(true)
 
         try {
-            // Form validation
             if (!email || !password) {
                 throw new Error("Please fill in all fields")
             }
@@ -43,25 +42,26 @@ export default function Login() {
                 body: JSON.stringify({ email, password }),
             })
 
-            const data = await response.json()
+            const data = await response.json();
+            console.log("Login API response", data);
 
             if (!response.ok) {
                 throw new Error(data.message || "Login failed. Please check your credentials.")
             }
 
             // Store token and user info in localStorage
-            localStorage.setItem("token", data.token)
-            localStorage.setItem("user", JSON.stringify(data.user))
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
 
             // Update auth context
-            login(data.token, data.user)
+            login(data.token, data.user);
+            navigate("/");
 
-            // Redirect to dashboard or home page
-            navigate("/")
         } catch (err) {
-            setError(err.message)
+            console.error("Login error:", err.message);
+            setError(err.message);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     }
 

@@ -90,7 +90,7 @@ export default function Navbar() {
                             </button>
                         ) : (
                             <Link
-                                to="/outline"
+                                to="/login"
                                 className="
         relative
         text-sm font-medium text-gray-800
