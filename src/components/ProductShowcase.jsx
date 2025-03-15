@@ -3,9 +3,9 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "src/components/ui/button";
 
 // Import your images from the assets folder
-import showcase1 from "src/assets/showcase5.webp";
-import showcase2 from "src/assets/showcase3.webp";
-import showcase3 from "src/assets/showcase4.webp";
+import showcase1 from "src/assets/p9.webp";
+import showcase2 from "src/assets/front1.webp";
+import showcase3 from "src/assets/back1.webp";
 
 const ProductSection = ({
                             title,

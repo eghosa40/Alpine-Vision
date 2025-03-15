@@ -1,10 +1,17 @@
-import { Link } from "react-router-dom"
-import { useCart } from "src/context/CartContext"
-import { Button } from "src/components/ui/button"
+import { Link } from "react-router-dom";
+import { useCart } from "src/context/CartContext";
+import { Button } from "src/components/ui/button";
 
 export default function Cart() {
-    const { cart, updateQuantity, removeFromCart } = useCart()
-    const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0)
+    const { cart, updateQuantity, removeFromCart } = useCart();
+    const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
+    // Format currency to GBP
+    const formatPrice = (amount) =>
+        new Intl.NumberFormat("en-GB", {
+            style: "currency",
+            currency: "GBP",
+        }).format(amount);
 
     // Empty Cart View
     if (cart.length === 0) {
@@ -23,7 +30,7 @@ export default function Cart() {
                     </Button>
                 </div>
             </div>
-        )
+        );
     }
 
     // Cart with Items
@@ -43,16 +50,16 @@ export default function Cart() {
                                     {/* Product Details */}
                                     <div className="flex items-start space-x-4">
                                         {/* Product Image */}
-                                        <div className="w-20 h-20">
+                                        <div className="w-20 h-20 bg-white rounded-md overflow-hidden">
                                             <img
-                                                src={item.image}
+                                                src={item.image || "/placeholder.svg"}
                                                 alt={item.name}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-contain bg-white"
                                             />
                                         </div>
                                         <div>
                                             <h2 className="text-lg sm:text-xl font-medium">{item.name}</h2>
-                                            <p className="text-sm mt-1">${item.price.toFixed(2)} each</p>
+                                            <p className="text-sm mt-1">{formatPrice(item.price)} each</p>
                                         </div>
                                     </div>
 
@@ -66,13 +73,8 @@ export default function Cart() {
                                                     e.stopPropagation();
                                                     updateQuantity(item.id, -1); // subtract 1
                                                 }}
-                                                className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-[6px] transition duration-200"
+                                                className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-md transition duration-200"
                                                 title="Decrease quantity"
-                                                style={{
-                                                    fontSize: "18px",
-                                                    fontWeight: 600,
-                                                    fontFamily: "Arial, sans-serif",
-                                                }}
                                             >
                                                 -
                                             </button>
@@ -86,37 +88,24 @@ export default function Cart() {
                                                     e.stopPropagation();
                                                     updateQuantity(item.id, 1); // add 1
                                                 }}
-
-                                                className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-[6px] transition duration-200"
+                                                className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-md transition duration-200"
                                                 title="Increase quantity"
-                                                style={{
-                                                    fontSize: "18px",
-                                                    fontWeight: 600,
-                                                    fontFamily: "Arial, sans-serif",
-                                                }}
                                             >
                                                 +
                                             </button>
                                         </div>
 
                                         {/* Item Total Price */}
-                                        <p className="font-semibold">
-                                            ${(item.price * item.quantity).toFixed(2)}
-                                        </p>
+                                        <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
 
                                         {/* Remove (X) Button */}
                                         <button
                                             onClick={(e) => {
-                                                e.stopPropagation()
-                                                removeFromCart(item.id)
+                                                e.stopPropagation();
+                                                removeFromCart(item.id);
                                             }}
-                                            className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-[6px] transition duration-200"
+                                            className="bg-black text-white w-[40px] h-[40px] flex items-center justify-center rounded-md transition duration-200"
                                             title="Remove item"
-                                            style={{
-                                                fontSize: "18px",
-                                                fontWeight: 500,
-                                                fontFamily: "Arial, sans-serif",
-                                            }}
                                         >
                                             X
                                         </button>
@@ -132,13 +121,13 @@ export default function Cart() {
                             <h2 className="text-lg sm:text-xl font-semibold mb-4">Order Summary</h2>
                             <div className="flex items-center justify-between mb-6">
                                 <span className="text-sm">Subtotal</span>
-                                <span className="text-base font-semibold">${subtotal.toFixed(2)}</span>
+                                <span className="text-base font-semibold">{formatPrice(subtotal)}</span>
                             </div>
                             <Button
                                 asChild
                                 className="bg-black text-white transition duration-200 py-3 text-sm sm:text-base font-semibold rounded-sm"
                             >
-                                <Link to="/checkout">Checkout</Link>
+                                <Link to="/">Checkout</Link>
                             </Button>
                             <p className="text-xs mt-4">
                                 Shipping and taxes will be calculated at checkout
@@ -148,15 +137,5 @@ export default function Cart() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
-
-
-
-
-
-
-
-
-
-

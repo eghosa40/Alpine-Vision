@@ -1,24 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import placeholderImage from "src/assets/showcase3.webp"; // Ensure this path is correct
-
-const products = [
-    { id: "1", name: "Alpine Pro", price: 120.0, image: placeholderImage, category: "Performance" },
-    { id: "2", name: "Summit Explorer", price: 90.0, image: placeholderImage, category: "Performance" },
-    {
-        id: "3",
-        name: "Snow Drift",
-        price: 80.0,
-        originalPrice: 100.0,
-        image: placeholderImage,
-        category: "Casual",
-        onSale: true,
-    },
-    { id: "4", name: "Mountain Glide", price: 70.0, image: placeholderImage, category: "Casual" },
-    { id: "5", name: "Storm Vision", price: 150.0, image: placeholderImage, category: "Performance" },
-    { id: "6", name: "Powder View", price: 110.0, image: placeholderImage, category: "Casual" },
-];
+import products from "src/data/products";
 
 const categories = ["All", "Performance", "Casual", "Sale"];
 const sortOptions = {
@@ -33,13 +16,24 @@ export default function ProductListing() {
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+    // Apply defaults to ensure no undefined values
+    const enhancedProducts = products.map((product) => ({
+        ...product,
+        category: product.category || "Performance",
+        onSale: product.onSale ?? false, // Ensure a boolean value
+        originalPrice: product.originalPrice || product.price,
+        isNew: product.isNew ?? false, // Ensure filtering by newest works
+    }));
+
+    // Filter products by category
     const filteredProducts =
         selectedCategory === "All"
-            ? products
+            ? enhancedProducts
             : selectedCategory === "Sale"
-                ? products.filter((product) => product.onSale)
-                : products.filter((product) => product.category === selectedCategory);
+                ? enhancedProducts.filter((product) => product.onSale === true)
+                : enhancedProducts.filter((product) => product.category === selectedCategory);
 
+    // Sort products dynamically
     const sortedProducts = [...filteredProducts].sort((a, b) => {
         switch (sortBy) {
             case "price-low":
@@ -85,7 +79,7 @@ export default function ProductListing() {
 
                     {isDropdownOpen && (
                         <div className="absolute right-0 mt-1 w-48 border border-gray-200 shadow-md z-10 rounded-md overflow-hidden bg-white">
-                            <div className="py-1 bg-white">  {/* Force White Background */}
+                            <div className="py-1 bg-white">
                                 {Object.keys(sortOptions).map((option) => (
                                     <button
                                         key={option}
@@ -104,17 +98,26 @@ export default function ProductListing() {
                 </div>
             </div>
 
-
-            {/* Product Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {/* Product Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
                 {sortedProducts.map((product) => (
                     <Link to={`/products/${product.id}`} key={product.id} className="group no-underline">
                         <div className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-0.5 rounded-lg overflow-hidden">
-                            <div className="relative aspect-[3/4] overflow-hidden bg-gray-50">
+                            {/* Uniform Image Container */}
+                            <div className="relative w-full aspect-square overflow-hidden bg-white group">
+                                {/* Default Image: object-cover ensures uniform size */}
                                 <img
-                                    src={product.image || placeholderImage}
+                                    src={product.image}
                                     alt={product.name}
-                                    className="object-cover object-center w-full h-full"
+                                    className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-0"
+                                    loading="lazy"
+                                />
+                                {/* Hover Image */}
+                                <img
+                                    src={product.hoverImage || product.image}
+                                    alt={product.name}
+                                    className="absolute top-0 left-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                    loading="lazy"
                                 />
                                 {product.onSale && (
                                     <div className="absolute top-0 right-0 bg-black text-white text-xs px-2 py-1 rounded-bl-md">
@@ -122,16 +125,23 @@ export default function ProductListing() {
                                     </div>
                                 )}
                             </div>
+
                             <div className="p-4">
                                 <h3 className="font-semibold text-base text-gray-900">{product.name}</h3>
                                 <div className="mt-1 flex items-center space-x-2">
-                                    {product.originalPrice ? (
+                                    {product.originalPrice > product.price ? (
                                         <>
-                                            <span className="text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
-                                            <span className="text-gray-900 font-semibold">${product.price.toFixed(2)}</span>
+                                            <span className="text-gray-500 line-through">
+                                                £{product.originalPrice.toFixed(2)}
+                                            </span>
+                                            <span className="text-gray-900 font-semibold">
+                                                £{product.price.toFixed(2)}
+                                            </span>
                                         </>
                                     ) : (
-                                        <span className="text-gray-900 font-semibold">${product.price.toFixed(2)}</span>
+                                        <span className="text-gray-900 font-semibold">
+                                            £{product.price.toFixed(2)}
+                                        </span>
                                     )}
                                 </div>
                             </div>

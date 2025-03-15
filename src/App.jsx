@@ -9,8 +9,7 @@ import ProductDetail from "src/pages/Product";
 import Cart from "src/pages/Cart";
 import Login from "src/pages/Login";
 import Register from "src/pages/Register";
-import AdminRoute from "src/components/AdminRoute";
-import AdminDashboard from "src/pages/AdminDashboard"; // Create this page
+
 
 function DebugAuth() {
     const auth = useAuth();
@@ -33,13 +32,6 @@ export default function App() {
                                 <Route path="/shop" element={<Shop />} />
                                 <Route path="/products/:id" element={<ProductDetail />} />
                                 <Route path="/cart" element={<Cart />} />
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/register" element={<Register />} />
-
-                                {/* Admin-Only Routes */}
-                                <Route element={<AdminRoute />}>
-                                    <Route path="/admin" element={<AdminDashboard />} />
-                                </Route>
                             </Routes>
                         </main>
                         <Footer />

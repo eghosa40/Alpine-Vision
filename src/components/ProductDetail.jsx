@@ -1,24 +1,50 @@
-import { useState } from "react";
-import { useCart } from "../context/CartContext";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useCart } from "src/context/CartContext";
+import products from "src/data/products";
 
-export default function ProductDetail({ product }) {
-    const [selectedImage, setSelectedImage] = useState(0);
-    const [quantity, setQuantity] = useState(1);
+export default function ProductDetail() {
+    const navigate = useNavigate();
     const { addToCart } = useCart();
+    const [quantity, setQuantity] = useState(1);
+    const [selectedImage, setSelectedImage] = useState(0);
+
+    const { id } = useParams();
+    const product = products.find((p) => p.id === id);
+
+    useEffect(() => {
+        if (!product) {
+            const timer = setTimeout(() => navigate("/shop"), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [product, navigate]);
+
+    if (!product) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <p className="text-xl text-gray-700 mb-4">Product not found.</p>
+                <Link to="/shop" className="text-blue-600 underline">
+                    Return to Shop
+                </Link>
+            </div>
+        );
+    }
+
+    // Ensure hoverImage exists; fallback to main image if missing
+    const images = [product.image, product.hoverImage || product.image];
 
     const handleQuantityChange = (e) => {
-        const value = Number.parseInt(e.target.value);
+        const value = parseInt(e.target.value);
         if (!isNaN(value) && value > 0) {
             setQuantity(value);
         }
     };
 
     const handleAddToCart = () => {
-        // Call addToCart as many times as specified by quantity
         for (let i = 0; i < quantity; i++) {
             addToCart(product);
         }
-        console.log("Cart after adding (ProductDetail):", product);
+        console.log("Added to cart:", product);
     };
 
     return (
@@ -29,7 +55,7 @@ export default function ProductDetail({ product }) {
                     <div className="flex gap-4">
                         {/* Thumbnails */}
                         <div className="flex flex-col gap-4">
-                            {product.images.map((image, index) => (
+                            {images.map((img, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setSelectedImage(index)}
@@ -38,7 +64,7 @@ export default function ProductDetail({ product }) {
                                     }`}
                                 >
                                     <img
-                                        src={image || "/placeholder.svg"}
+                                        src={img || "/placeholder.svg"}
                                         alt={`${product.name} thumbnail ${index + 1}`}
                                         className="w-full h-full object-cover"
                                     />
@@ -50,7 +76,7 @@ export default function ProductDetail({ product }) {
                         <div className="flex-1">
                             <div className="aspect-square rounded-lg overflow-hidden">
                                 <img
-                                    src={product.images[selectedImage] || "/placeholder.svg"}
+                                    src={images[selectedImage] || "/placeholder.svg"}
                                     alt={product.name}
                                     className="w-full h-full object-cover"
                                 />
@@ -60,9 +86,18 @@ export default function ProductDetail({ product }) {
 
                     {/* Product Info */}
                     <div className="bg-white p-8 rounded-lg shadow-md">
-                        <h1 className="text-4xl font-medium text-black mb-4">{product.name}</h1>
-                        <p className="text-2xl text-black mb-6">${product.price.toFixed(2)}</p>
-                        <p className="text-gray-700 mb-8 leading-relaxed">{product.description}</p>
+                        <h1 className="text-4xl font-medium text-black mb-4">
+                            {product.name}
+                        </h1>
+                        <p className="text-2xl text-black mb-6">
+                            {new Intl.NumberFormat("en-GB", {
+                                style: "currency",
+                                currency: "GBP",
+                            }).format(product.price)}
+                        </p>
+                        <p className="text-gray-700 mb-8 leading-relaxed">
+                            {product.description}
+                        </p>
 
                         {/* Quantity Selector */}
                         <div className="mb-6">
@@ -93,5 +128,3 @@ export default function ProductDetail({ product }) {
         </div>
     );
 }
-
-

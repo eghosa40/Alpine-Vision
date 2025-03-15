@@ -1,39 +1,74 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
     const [cart, setCart] = useState([]);
 
+    // 1. Load cart from localStorage on first render
+    useEffect(() => {
+        const storedCart = localStorage.getItem("cart");
+        if (storedCart) {
+            setCart(JSON.parse(storedCart));
+        }
+    }, []);
+
+    // 2. Sync cart to localStorage on every update (for redundancy)
+    // If you prefer to only update localStorage in the actions below,
+    // you can remove this effect. However, leaving it ensures the cart
+    // is always saved even if you add new actions later.
+    useEffect(() => {
+        localStorage.setItem("cart", JSON.stringify(cart));
+    }, [cart]);
+
+    // 3. Cart Actions
+
+    // Add item to cart (or increase quantity if it already exists)
     const addToCart = (product) => {
-        setCart(prevCart => {
-            const index = prevCart.findIndex(item => item.id === product.id);
+        setCart((prevCart) => {
+            const index = prevCart.findIndex((item) => item.id === product.id);
+            let newCart;
             if (index !== -1) {
-                // Update only the matching item, increasing its quantity by 1
-                return prevCart.map((item, i) =>
+                newCart = prevCart.map((item, i) =>
                     i === index ? { ...item, quantity: item.quantity + 1 } : item
                 );
             } else {
-                // Add new product with quantity 1
-                return [...prevCart, { ...product, quantity: 1 }];
+                newCart = [...prevCart, { ...product, quantity: 1 }];
             }
+            // Update localStorage immediately
+            localStorage.setItem("cart", JSON.stringify(newCart));
+            return newCart;
         });
     };
 
+    // Remove item from cart
     const removeFromCart = (id) => {
-        setCart(prevCart => prevCart.filter(item => item.id !== id));
+        setCart((prevCart) => {
+            const newCart = prevCart.filter((item) => item.id !== id);
+            // Update localStorage immediately
+            localStorage.setItem("cart", JSON.stringify(newCart));
+            return newCart;
+        });
     };
 
+    // Update item quantity
     const updateQuantity = (id, amount) => {
-        setCart(prevCart =>
-            prevCart.map(item =>
-                item.id === id ? { ...item, quantity: Math.max(1, item.quantity + amount) } : item
-            )
-        );
+        setCart((prevCart) => {
+            const newCart = prevCart.map((item) =>
+                item.id === id
+                    ? { ...item, quantity: Math.max(1, item.quantity + amount) }
+                    : item
+            );
+            // Update localStorage immediately
+            localStorage.setItem("cart", JSON.stringify(newCart));
+            return newCart;
+        });
     };
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity }}>
+        <CartContext.Provider
+            value={{ cart, addToCart, removeFromCart, updateQuantity }}
+        >
             {children}
         </CartContext.Provider>
     );
@@ -42,4 +77,5 @@ export function CartProvider({ children }) {
 export function useCart() {
     return useContext(CartContext);
 }
+
 
